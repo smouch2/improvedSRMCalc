@@ -1,46 +1,31 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="styles.css" />
     <title>Malt Color Mixer</title>
-/* https://codepen.io/draber/pen/mdyYLNJ */
-
 </head>
 <body>
-    
 <!-- Batch Size -->
 <div>
     <h3>Batch Size</h3>
     <label for="batchSize">Batch Size (gallons):</label>
     <input type="number" id="batchSize" value="5" onchange="updateSRM()">
 </div>
-    
-<!-- Base Malts Input -->  
-<div>
-    <h3>Base Malts</h3>
-    <label for="baseMaltWeight">Weight (pounds):</label>
-    <input type="number" id="baseMaltWeight" value="0" onchange="updateSRM()">
-</div>
-<!-- Specialty Malts Input -->
-<div>
-    <h3>Specialty Malts</h3>
-    <label for="specialtyMaltWeight">Weight (pounds):</label>
-    <input type="number" id="specialtyMaltWeight" value="0" onchange="updateSRM()">
-</div>
-<!-- Crystal Malts Input -->
-<div>
-    <h3>Crystal Malts</h3>
-    <label for="crystalMaltWeight">Weight (pounds):</label>
-    <input type="number" id="crystalMaltWeight" value="0" onchange="updateSRM()">
-</div>
-<!-- Roasted Malts Input --> 
- <div>
-    <h3>Roasted Malts</h3>
-    <label for="roastedMaltWeight">Weight (pounds):</label>
-    <input type="number" id="roastedMaltWeight" value="0" onchange="updateSRM()">
-</div>
+  
+<table id="maltTable">
+    <tr>
+        <th>Malt</th>
+        <th>Weight (lbs)</th>
+        <th>ºL</th>
+        <th>Type</th>
+        <th>SRM Contribution</th>
+    </tr>
+    <!-- Rows will be dynamically added here -->
+</table>
+
+<button onclick="addRow()">Add Row</button>
 
 <!-- Base Malts -->
 <div>
