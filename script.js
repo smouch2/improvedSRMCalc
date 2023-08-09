@@ -1,12 +1,3 @@
-const malts = {
-    "Pils": { "type": "Base", "lovibond": 1.5 },
-    "Munich": { "type": "Base", "lovibond": 5 },
-    "Vienna": { "type": "Base", "lovibond": 4 },
-    "Corn": { "type": "Specialty", "lovibond": 0.5 },
-    "Crystal 60": { "type": "Crystal", "lovibond": 60 },
-    "Carafa I": { "type": "Roasted", "lovibond": 340 }
-};
-
 function updateColor() {
     const baseToggle = document.getElementById('baseToggle').checked;
     const specialtyToggle = document.getElementById('specialtyToggle').checked;
@@ -159,3 +150,99 @@ function resetSliders() {
     document.getElementById('crystalMalt').value = 0;
     document.getElementById('roastedMalt').value = 0;
 }
+
+function updateMaltDetails(event) {
+    const dropdown = event.target;
+    const selectedMalt = dropdown.value;
+
+    const maltDetails = maltIndex.find(m => m.Malts === selectedMalt);
+
+    if (maltDetails) {
+        const row = dropdown.parentElement.parentElement;
+
+        // Update malt type
+        row.cells[2].firstChild.value = maltDetails.Malts;
+
+        // Update Lovibond value
+        row.cells[1].firstChild.value = maltDetails["ºL"]; 
+    }
+}
+
+let maltIndex = []; // Initialize as empty, will be populated with fetched data
+
+// Fetch the data from the JSON file
+fetch('maltIndex.json')
+    .then(response => response.json())
+    .then(data => {
+        maltIndex = data;
+        // Initialize your application once the data is loaded
+        addRow(); // Add the first row by default after fetching the data
+    })
+    .catch(error => console.error('Error fetching the JSON data:', error));
+
+function addRow() {
+    const table = document.getElementById("maltTable");
+    const row = table.insertRow(-1);
+    
+    // Malt dropdown
+    const cell1 = row.insertCell(0);
+    const maltDropdown = document.createElement("select");
+    maltDropdown.onchange = function(event) {
+    updateSRMContribution(event);
+    updateMaltDetails(event);
+};
+    maltIndex.forEach(malt => {
+        const option = document.createElement("option");
+        option.value = malt.Malts;
+        option.text = malt.Malts;
+        maltDropdown.appendChild(option);
+    });
+    cell1.appendChild(maltDropdown);
+    
+    // Weight input
+    const cell2 = row.insertCell(1);
+    const weightInput = document.createElement("input");
+    weightInput.type = "number";
+    weightInput.oninput = updateSRMContribution;
+    cell2.appendChild(weightInput);
+    
+    // Lovibond display
+    const cell3 = row.insertCell(2);
+    const lovibondDisplay = document.createElement("span");
+    lovibondDisplay.textContent = maltIndex[0]["ºL"];
+    cell3.appendChild(lovibondDisplay);
+    
+    // Type display
+    const cell4 = row.insertCell(3);
+    const typeDisplay = document.createElement("span");
+    typeDisplay.textContent = maltIndex[0]["Type"];
+    cell4.appendChild(typeDisplay);
+    
+    // SRM Contribution display
+    const cell5 = row.insertCell(4);
+    const srmDisplay = document.createElement("span");
+    srmDisplay.textContent = "0"; // default value
+    cell5.appendChild(srmDisplay);
+}
+
+function updateSRMContribution(event) {
+    const row = event.target.parentElement.parentElement;
+    const maltName = row.cells[0].firstChild.value;
+    const weight = parseFloat(row.cells[1].firstChild.value);
+
+    const batchSize = parseFloat(document.getElementById('batchSize').value);
+
+    // Ensure we don't divide by zero
+    if (batchSize === 0) return;
+
+    const malt = maltIndex.find(m => m.Malts === maltName);
+    row.cells[2].firstChild.textContent = malt["ºL"];
+    row.cells[3].firstChild.textContent = malt["Type"];
+
+    // Updated SRM contribution formula
+    const srmContribution = (weight * parseFloat(malt["ºL"])) / batchSize;
+    row.cells[4].firstChild.textContent = srmContribution.toFixed(2);
+}
+
+// Add the first row by default
+addRow();
