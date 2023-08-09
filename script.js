@@ -243,6 +243,3 @@ function updateSRMContribution(event) {
     const srmContribution = (weight * parseFloat(malt["ºL"])) / batchSize;
     row.cells[4].firstChild.textContent = srmContribution.toFixed(2);
 }
-
-// Add the first row by default
-addRow();
