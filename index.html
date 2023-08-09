@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malt Color Mixer</title>
     <style>
-    // Note: The demo also uses `normalize.css`
-// and https://codepen.io/draber/pen/BayEGwb
-
+/* https://codepen.io/draber/pen/mdyYLNJ */
 [data-preview] {
   height: 10rem;
   margin-bottom: 0.5rem;
@@ -191,6 +189,7 @@ pre {
   max-height: calc(100vh - 40px);
   overflow: auto;
 }
+
     </style>
 
 </head>
@@ -200,7 +199,7 @@ pre {
 <div>
     <h3>Base Malts</h3>
     <label for="baseMalt">Base Malt:</label>
-    <input type="range" id="baseMalt" min="0" max="100" step="10" value="0" onchange="updateColor()">
+    <input type="range" id="baseMalt" min="0" max="100" step="0.01" value="0" onchange="updateColor()">
     <label for="baseToggle">Include Base Malt:</label>
     <input type="checkbox" id="baseToggle" checked onchange="updateColor()">
 </div>
@@ -209,7 +208,7 @@ pre {
 <div>
     <h3>Specialty Malts</h3>
     <label for="specialtyMalt">Specialty Malt:</label>
-    <input type="range" id="specialtyMalt" min="0" max="100" step="10" value="0" onchange="updateColor()">
+    <input type="range" id="specialtyMalt" min="0" max="100" step="0.01" value="0" onchange="updateColor()">
     <label for="specialtyToggle">Include Specialty Malt:</label>
     <input type="checkbox" id="specialtyToggle" checked onchange="updateColor()">
 </div>
@@ -218,7 +217,7 @@ pre {
 <div>
     <h3>Crystal Malts</h3>
     <label for="crystalMalt">Crystal Malt:</label>
-    <input type="range" id="crystalMalt" min="0" max="100" step="10" value="0" onchange="updateColor()">
+    <input type="range" id="crystalMalt" min="0" max="100" step="0.01" value="0" onchange="updateColor()">
     <label for="crystalToggle">Include Crystal Malt:</label>
     <input type="checkbox" id="crystalToggle" checked onchange="updateColor()">
 </div>
@@ -227,7 +226,7 @@ pre {
 <div>
     <h3>Roasted Malts</h3>
     <label for="roastedMalt">Roasted Malt:</label>
-    <input type="range" id="roastedMalt" min="0" max="100" step="10" value="0" onchange="updateColor()">
+    <input type="range" id="roastedMalt" min="0" max="100" step="0.01" value="0" onchange="updateColor()">
     <label for="roastedToggle">Include Roasted Malt:</label>
     <input type="checkbox" id="roastedToggle" checked onchange="updateColor()">
 </div>
@@ -235,132 +234,166 @@ pre {
 <!-- Color Display -->
 <div id="displayColor" style="width: 200px; height: 200px;"></div>
 
-<script>function updateColor() {
-    const baseToggle = document.getElementById('baseToggle').checked;
-    const specialtyToggle = document.getElementById('specialtyToggle').checked;
-    const crystalToggle = document.getElementById('crystalToggle').checked;
-    const roastedToggle = document.getElementById('roastedToggle').checked;
+<script>const malts = {
+  "Pils": { "type": "Base", "lovibond": 1.5 },
+  "Munich": { "type": "Base", "lovibond": 5 },
+  "Vienna": { "type": "Base", "lovibond": 4 },
+  "Corn": { "type": "Specialty", "lovibond": 0.5 },
+  "Crystal 60": { "type": "Crystal", "lovibond": 60 },
+  "Carafa I": { "type": "Roasted", "lovibond": 340 }
+};
 
-    // Disable/Enable the sliders based on the toggle status
-    document.getElementById('baseMalt').disabled = !baseToggle;
-    document.getElementById('specialtyMalt').disabled = !specialtyToggle;
-    document.getElementById('crystalMalt').disabled = !crystalToggle;
-    document.getElementById('roastedMalt').disabled = !roastedToggle;
+function updateColor() {
+  const baseToggle = document.getElementById('baseToggle').checked;
+  const specialtyToggle = document.getElementById('specialtyToggle').checked;
+  const crystalToggle = document.getElementById('crystalToggle').checked;
+  const roastedToggle = document.getElementById('roastedToggle').checked;
 
-    // Fetch the slider value if the malt type is toggled on, otherwise use 0
-    const baseMaltValue = baseToggle ? parseFloat(document.getElementById('baseMalt').value) / 100 : 0;
-    const specialtyMaltValue = specialtyToggle ? parseFloat(document.getElementById('specialtyMalt').value) / 100 : 0;
-    const crystalMaltValue = crystalToggle ? parseFloat(document.getElementById('crystalMalt').value) / 100 : 0;
-    const roastedMaltValue = roastedToggle ? parseFloat(document.getElementById('roastedMalt').value) / 100 : 0;
+  // Disable/Enable the sliders based on the toggle status
+  document.getElementById('baseMalt').disabled = !baseToggle;
+  document.getElementById('specialtyMalt').disabled = !specialtyToggle;
+  document.getElementById('crystalMalt').disabled = !crystalToggle;
+  document.getElementById('roastedMalt').disabled = !roastedToggle;
 
-    const rgb = getCombinedMaltRgb(baseMaltValue, specialtyMaltValue, crystalMaltValue, roastedMaltValue);
+  // Fetch the slider value if the malt type is toggled on, otherwise use 0
+  const baseMaltValue = baseToggle ? parseFloat(document.getElementById('baseMalt').value) / 100 : 0;
+  const specialtyMaltValue = specialtyToggle ? parseFloat(document.getElementById('specialtyMalt').value) / 100 : 0;
+  const crystalMaltValue = crystalToggle ? parseFloat(document.getElementById('crystalMalt').value) / 100 : 0;
+  const roastedMaltValue = roastedToggle ? parseFloat(document.getElementById('roastedMalt').value) / 100 : 0;
 
-    const displayElement = document.getElementById('displayColor');
-    displayElement.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+  const rgb = getCombinedMaltRgb(baseMaltValue, specialtyMaltValue, crystalMaltValue, roastedMaltValue);
+
+  const displayElement = document.getElementById('displayColor');
+  displayElement.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
 }
 
 function interpolate(poles, value) {
-    if (poles.length === 2) {
-        // Linear interpolation
-        return {
-            c: poles[0].c + value * (poles[1].c - poles[0].c),
-            m: poles[0].m + value * (poles[1].m - poles[0].m),
-            y: poles[0].y + value * (poles[1].y - poles[0].y),
-            k: poles[0].k + value * (poles[1].k - poles[0].k)
-        };
-    } else if (poles.length === 3) {
-        if (value < 0.5) {
-            return interpolate([poles[0], poles[1]], value * 2);
-        } else {
-            return interpolate([poles[1], poles[2]], (value - 0.5) * 2);
-        }
-    }
+  if (poles.length === 2) {
+      // Linear interpolation
+      return {
+          c: poles[0].c + value * (poles[1].c - poles[0].c),
+          m: poles[0].m + value * (poles[1].m - poles[0].m),
+          y: poles[0].y + value * (poles[1].y - poles[0].y),
+          k: poles[0].k + value * (poles[1].k - poles[0].k)
+      };
+  } else if (poles.length === 3) {
+      if (value < 0.5) {
+          return interpolate([poles[0], poles[1]], value * 2);
+      } else {
+          return interpolate([poles[1], poles[2]], (value - 0.5) * 2);
+      }
+  }
 }
 
 function getCombinedMaltRgb(baseValue, specialtyValue, crystalValue, roastedValue) {
-    const poles = {
-        base: [
-            { c: 0, m: 0, y: 0.25, k: 0 },
-            { c: 0, m: 0, y: 1, k: 0 },
-            { c: 0, m: 0.5, y: 1, k: 0 }
-        ],
-        specialty: [
-            { c: 0, m: 0.5, y: 1, k: 0 },
-            { c: 0, m: 1, y: 1, k: 0.5 }
-        ],
-        crystal: [
-            { c: 0, m: 0.75, y: 1, k: 0 },
-            { c: 0, m: 1, y: 1, k: 0.25 },
-            { c: 0, m: 1, y: 1, k: 0.75 }
-        ],
-        roasted: [
-            { c: 0, m: 0.5, y: 1, k: 0.5 },
-            { c: 0, m: 1, y: 1, k: 1 }
-        ]
-    };
+  const poles = {
+      base: [
+          { c: 0, m: 0, y: 0.25, k: 0 },
+          { c: 0, m: 0, y: 1, k: 0 },
+          { c: 0, m: 0.5, y: 1, k: 0 }
+      ],
+      specialty: [
+          { c: 0, m: 0.5, y: 1, k: 0 },
+          { c: 0, m: 1, y: 1, k: 0.5 }
+      ],
+      crystal: [
+          { c: 0, m: 0.75, y: 1, k: 0 },
+          { c: 0, m: 1, y: 1, k: 0.25 },
+          { c: 0, m: 1, y: 1, k: 0.75 }
+      ],
+      roasted: [
+          { c: 0, m: 0.5, y: 1, k: 0.5 },
+          { c: 0, m: 1, y: 1, k: 1 }
+      ]
+  };
 
-    const baseCmyk = interpolate(poles.base, baseValue);
-    const specialtyCmyk = interpolate(poles.specialty, specialtyValue);
-    const crystalCmyk = interpolate(poles.crystal, crystalValue);
-    const roastedCmyk = interpolate(poles.roasted, roastedValue);
+  const baseCmyk = interpolate(poles.base, baseValue);
+  const specialtyCmyk = interpolate(poles.specialty, specialtyValue);
+  const crystalCmyk = interpolate(poles.crystal, crystalValue);
+  const roastedCmyk = interpolate(poles.roasted, roastedValue);
 
-    // Combine the CMYK values (simple average for now)
-    // Initialize combinedCmyk with zeros
-    const combinedCmyk = {
-        c: 0,
-        m: 0,
-        y: 0,
-        k: 0
-    };
+  // Combine the CMYK values (simple average for now)
+  // Calculate the sum of all malt values.
+  const totalValue = baseValue + specialtyValue + crystalValue + roastedValue;
+  
+  // Avoid division by zero.
+  if (totalValue === 0) return cmykToRgb(0, 0, 0, 0);
 
-    // Only add the values of toggled malts
-    if (baseValue > 0) {
-        combinedCmyk.c += baseCmyk.c;
-        combinedCmyk.m += baseCmyk.m;
-        combinedCmyk.y += baseCmyk.y;
-        combinedCmyk.k += baseCmyk.k;
-    }
+  // Calculate the proportion of each malt type.
+  const baseProportion = baseValue / totalValue;
+  const specialtyProportion = specialtyValue / totalValue;
+  const crystalProportion = crystalValue / totalValue;
+  const roastedProportion = roastedValue / totalValue;
 
-    if (specialtyValue > 0) {
-        combinedCmyk.c += specialtyCmyk.c;
-        combinedCmyk.m += specialtyCmyk.m;
-        combinedCmyk.y += specialtyCmyk.y;
-        combinedCmyk.k += specialtyCmyk.k;
-    }
+  const combinedCmyk = {
+      c: baseCmyk.c * baseProportion + specialtyCmyk.c * specialtyProportion + crystalCmyk.c * crystalProportion + roastedCmyk.c * roastedProportion,
+      m: baseCmyk.m * baseProportion + specialtyCmyk.m * specialtyProportion + crystalCmyk.m * crystalProportion + roastedCmyk.m * roastedProportion,
+      y: baseCmyk.y * baseProportion + specialtyCmyk.y * specialtyProportion + crystalCmyk.y * crystalProportion + roastedCmyk.y * roastedProportion,
+      k: baseCmyk.k * baseProportion + specialtyCmyk.k * specialtyProportion + crystalCmyk.k * crystalProportion + roastedCmyk.k * roastedProportion,
+  };
 
-    if (crystalValue > 0) {
-        combinedCmyk.c += crystalCmyk.c;
-        combinedCmyk.m += crystalCmyk.m;
-        combinedCmyk.y += crystalCmyk.y;
-        combinedCmyk.k += crystalCmyk.k;
-    }
-
-    if (roastedValue > 0) {
-        combinedCmyk.c += roastedCmyk.c;
-        combinedCmyk.m += roastedCmyk.m;
-        combinedCmyk.y += roastedCmyk.y;
-        combinedCmyk.k += roastedCmyk.k;
-    }
-    // Ensure that none of the CMYK values exceed 1
-combinedCmyk.c = Math.min(combinedCmyk.c, 1);
-combinedCmyk.m = Math.min(combinedCmyk.m, 1);
-combinedCmyk.y = Math.min(combinedCmyk.y, 1);
-combinedCmyk.k = Math.min(combinedCmyk.k, 1);
-
-    // Convert CMYK to RGB
-    const rgb = cmykToRgb(combinedCmyk.c, combinedCmyk.m, combinedCmyk.y, combinedCmyk.k);
-    return rgb;
+  // Convert CMYK to RGB
+  const rgb = cmykToRgb(combinedCmyk.c, combinedCmyk.m, combinedCmyk.y, combinedCmyk.k);
+  return rgb;
 }
 
 function cmykToRgb(c, m, y, k) {
-    const r = 255 * (1 - c) * (1 - k);
-    const g = 255 * (1 - m) * (1 - k);
-    const b = 255 * (1 - y) * (1 - k);
-    return { r: Math.round(r), g: Math.round(g), b: Math.round(b) };
+  const r = 255 * (1 - c) * (1 - k);
+  const g = 255 * (1 - m) * (1 - k);
+  const b = 255 * (1 - y) * (1 - k);
+  return { r: Math.round(r), g: Math.round(g), b: Math.round(b) };
 }
 
-// Initial color display
-updateColor();
-</script>
+function updateSRM() {
+  const batchSize = parseFloat(document.getElementById('batchSize').value);
+  
+  // Ensure we don't divide by zero
+  if (batchSize === 0) return;
+
+  let totalSRM = 0; 
+
+  for (let maltName in malts) {
+      const weight = parseFloat(document.getElementById(maltName + 'Weight').value);
+      totalSRM += (weight * malts[maltName].lovibond) / batchSize;  // Calculating SRM contribution
+  }
+
+  setSliderValuesBySRM(totalSRM);
+
+  // Update the color display
+  updateColor();
+}
+
+function setSliderValuesBySRM(srm) {
+  resetSliders(); // Set all sliders to 0 initially
+  
+  if (srm <= 10) {
+      document.getElementById('baseMalt').value = srm * 10; // as slider goes from 0 to 100, not 0 to 10
+  } else if (srm <= 20) {
+      document.getElementById('baseMalt').value = 100;
+      document.getElementById('specialtyMalt').value = (srm - 10) * 10;
+  } else if (srm <= 30) {
+      document.getElementById('baseMalt').value = 100;
+      document.getElementById('specialtyMalt').value = 100;
+      document.getElementById('crystalMalt').value = (srm - 20) * 10;
+  } else if (srm <= 40) {
+      document.getElementById('baseMalt').value = 100;
+      document.getElementById('specialtyMalt').value = 100;
+      document.getElementById('crystalMalt').value = 100;
+      document.getElementById('roastedMalt').value = (srm - 30) * 10;
+  } else {
+      // All sliders maxed out if SRM exceeds 40
+      document.getElementById('baseMalt').value = 100;
+      document.getElementById('specialtyMalt').value = 100;
+      document.getElementById('crystalMalt').value = 100;
+      document.getElementById('roastedMalt').value = 100;
+  }
+}
+
+function resetSliders() {
+  document.getElementById('baseMalt').value = 0;
+  document.getElementById('specialtyMalt').value = 0;
+  document.getElementById('crystalMalt').value = 0;
+  document.getElementById('roastedMalt').value = 0;
+}</script>
 </body>
 </html>
