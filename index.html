@@ -9,12 +9,44 @@
 
 </head>
 <body>
+    
+<!-- Batch Size -->
+<div>
+    <h3>Batch Size</h3>
+    <label for="batchSize">Batch Size (gallons):</label>
+    <input type="number" id="batchSize" value="5" onchange="updateSRM()">
+</div>
+    
+<!-- Base Malts Input -->  
+<div>
+    <h3>Base Malts</h3>
+    <label for="baseMaltWeight">Weight (pounds):</label>
+    <input type="number" id="baseMaltWeight" value="0" onchange="updateSRM()">
+</div>
+<!-- Specialty Malts Input -->
+<div>
+    <h3>Specialty Malts</h3>
+    <label for="specialtyMaltWeight">Weight (pounds):</label>
+    <input type="number" id="specialtyMaltWeight" value="0" onchange="updateSRM()">
+</div>
+<!-- Crystal Malts Input -->
+<div>
+    <h3>Crystal Malts</h3>
+    <label for="crystalMaltWeight">Weight (pounds):</label>
+    <input type="number" id="crystalMaltWeight" value="0" onchange="updateSRM()">
+</div>
+<!-- Roasted Malts Input --> 
+ <div>
+    <h3>Roasted Malts</h3>
+    <label for="roastedMaltWeight">Weight (pounds):</label>
+    <input type="number" id="roastedMaltWeight" value="0" onchange="updateSRM()">
+</div>
 
 <!-- Base Malts -->
 <div>
     <h3>Base Malts</h3>
     <label for="baseMalt">Base Malt:</label>
-    <input type="range" id="baseMalt" min="0" max="100" step="0.01" value="0" onchange="updateColor()">
+    <input type="range" id="baseMalt" min="0" max="100" step="10" value="0" onchange="updateColor()">
     <label for="baseToggle">Include Base Malt:</label>
     <input type="checkbox" id="baseToggle" checked onchange="updateColor()">
 </div>
@@ -23,7 +55,7 @@
 <div>
     <h3>Specialty Malts</h3>
     <label for="specialtyMalt">Specialty Malt:</label>
-    <input type="range" id="specialtyMalt" min="0" max="100" step="0.01" value="0" onchange="updateColor()">
+    <input type="range" id="specialtyMalt" min="0" max="100" step="10" value="0" onchange="updateColor()">
     <label for="specialtyToggle">Include Specialty Malt:</label>
     <input type="checkbox" id="specialtyToggle" checked onchange="updateColor()">
 </div>
@@ -32,7 +64,7 @@
 <div>
     <h3>Crystal Malts</h3>
     <label for="crystalMalt">Crystal Malt:</label>
-    <input type="range" id="crystalMalt" min="0" max="100" step="0.01" value="0" onchange="updateColor()">
+    <input type="range" id="crystalMalt" min="0" max="100" step="10" value="0" onchange="updateColor()">
     <label for="crystalToggle">Include Crystal Malt:</label>
     <input type="checkbox" id="crystalToggle" checked onchange="updateColor()">
 </div>
@@ -41,7 +73,7 @@
 <div>
     <h3>Roasted Malts</h3>
     <label for="roastedMalt">Roasted Malt:</label>
-    <input type="range" id="roastedMalt" min="0" max="100" step="0.01" value="0" onchange="updateColor()">
+    <input type="range" id="roastedMalt" min="0" max="100" step="10" value="0" onchange="updateColor()">
     <label for="roastedToggle">Include Roasted Malt:</label>
     <input type="checkbox" id="roastedToggle" checked onchange="updateColor()">
 </div>
