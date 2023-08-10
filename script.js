@@ -1,3 +1,5 @@
+let totalSRM = 0;
+
 function updateColor() {
     const baseToggle = document.getElementById('baseToggle').checked;
     const specialtyToggle = document.getElementById('specialtyToggle').checked;
@@ -195,6 +197,7 @@ function addRow() {
     maltDropdown.onchange = function(event) {
       updateSRMContribution(event);
       updateMaltDetails(event);
+      updateTotalSRM(event);
   };
     maltIndex.forEach(malt => {
         const option = document.createElement("option");
@@ -233,6 +236,17 @@ function addRow() {
     srmDisplay.textContent = "";  
     cell5.appendChild(srmDisplay);
 }
+function updateTotalSRM() {
+    totalSRM = 0;
+    let tableRows = document.querySelectorAll('#malt-table tbody tr'); // Adjust the selector if your table has a different ID or structure
+    tableRows.forEach(row => {
+        let quantity = parseFloat(row.cells[0].firstChild.textContent);
+        let lovibond = parseFloat(row.cells[2].firstChild.textContent);
+        // This is a basic formula to compute SRM, adjust as needed:
+        totalSRM += (lovibond * quantity) / 10; 
+    });
+    document.getElementById('total-srm').textContent = totalSRM.toFixed(2);
+}
 
 function updateSRMContribution(event) {
     const row = event.target.parentElement.parentElement;
@@ -246,7 +260,7 @@ function updateSRMContribution(event) {
 
     const malt = maltIndex.find(m => m.Malts === maltName);
     row.cells[2].firstChild.textContent = malt["ºL"];
-    row.cells[1].firstChild.textContent = malt["Type"];
+    row.cells[3].firstChild.textContent = malt["Type"];
 
     // Updated SRM contribution formula
     const srmContribution = (weight * parseFloat(malt["ºL"])) / batchSize;
