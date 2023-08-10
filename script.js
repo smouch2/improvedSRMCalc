@@ -155,16 +155,16 @@ function updateMaltDetails(event) {
     const dropdown = event.target;
     const selectedMalt = dropdown.value;
 
-    const maltDetails = maltIndex.find(m => m.Malts === selectedMalt);
+    const maltDetails = maltIndex.find(m => m[0] === selectedMalt);
 
     if (maltDetails) {
         const row = dropdown.parentElement.parentElement;
 
         // Update malt type
-        row.cells[2].firstChild.value = maltDetails.Malts;
+        row.cells[3].firstChild.textContent = maltDetails[1];  // Type in the 2nd cell
 
         // Update Lovibond value
-        row.cells[1].firstChild.value = maltDetails["ºL"]; 
+        row.cells[2].firstChild.textContent = maltDetails[2];  // Lovibond in the 3rd cell
     }
 }
 
@@ -187,10 +187,15 @@ function addRow() {
     // Malt dropdown
     const cell1 = row.insertCell(0);
     const maltDropdown = document.createElement("select");
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.text = "-- Select a malt --";
+    maltDropdown.appendChild(defaultOption);
+  
     maltDropdown.onchange = function(event) {
-    updateSRMContribution(event);
-    updateMaltDetails(event);
-};
+      updateSRMContribution(event);
+      updateMaltDetails(event);
+  };
     maltIndex.forEach(malt => {
         const option = document.createElement("option");
         option.value = malt.Malts;
@@ -203,25 +208,29 @@ function addRow() {
     const cell2 = row.insertCell(1);
     const weightInput = document.createElement("input");
     weightInput.type = "number";
+    weightInput.value = "";
     weightInput.oninput = updateSRMContribution;
     cell2.appendChild(weightInput);
     
     // Lovibond display
     const cell3 = row.insertCell(2);
     const lovibondDisplay = document.createElement("span");
-    lovibondDisplay.textContent = maltIndex[0]["ºL"];
+    //lovibondDisplay.textContent = maltIndex[2]["ºL"];
+    lovibondDisplay.textContent = "";
     cell3.appendChild(lovibondDisplay);
     
     // Type display
     const cell4 = row.insertCell(3);
     const typeDisplay = document.createElement("span");
-    typeDisplay.textContent = maltIndex[0]["Type"];
+    //typeDisplay.textContent = maltIndex[1]["Type"];
+    typeDisplay.textContent = "";
     cell4.appendChild(typeDisplay);
     
     // SRM Contribution display
     const cell5 = row.insertCell(4);
     const srmDisplay = document.createElement("span");
-    srmDisplay.textContent = "0"; // default value
+    //srmDisplay.textContent = "0"; // default value
+    srmDisplay.textContent = "";  
     cell5.appendChild(srmDisplay);
 }
 
@@ -237,7 +246,7 @@ function updateSRMContribution(event) {
 
     const malt = maltIndex.find(m => m.Malts === maltName);
     row.cells[2].firstChild.textContent = malt["ºL"];
-    row.cells[3].firstChild.textContent = malt["Type"];
+    row.cells[1].firstChild.textContent = malt["Type"];
 
     // Updated SRM contribution formula
     const srmContribution = (weight * parseFloat(malt["ºL"])) / batchSize;
