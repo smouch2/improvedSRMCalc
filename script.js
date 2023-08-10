@@ -1,4 +1,3 @@
-let totalSRM = 0;
 
 function updateColor() {
     const baseToggle = document.getElementById('baseToggle').checked;
@@ -101,25 +100,6 @@ function cmykToRgb(c, m, y, k) {
     return { r: Math.round(r), g: Math.round(g), b: Math.round(b) };
 }
 
-function updateSRM() {
-    const batchSize = parseFloat(document.getElementById('batchSize').value);
-    
-    // Ensure we don't divide by zero
-    if (batchSize === 0) return;
-
-    let totalSRM = 0; 
-
-    for (let maltName in malts) {
-        const weight = parseFloat(document.getElementById(maltName + 'Weight').value);
-        totalSRM += (weight * malts[maltName].lovibond) / batchSize;  // Calculating SRM contribution
-    }
-
-    setSliderValuesBySRM(totalSRM);
-
-    // Update the color display
-    updateColor();
-}
-
 function setSliderValuesBySRM(srm) {
     resetSliders(); // Set all sliders to 0 initially
     
@@ -212,7 +192,10 @@ function addRow() {
     const weightInput = document.createElement("input");
     weightInput.type = "number";
     weightInput.value = "";
-    weightInput.oninput = updateSRMContribution;
+    weightInput.oninput = function(event) {
+      updateSRMContribution(event);
+      updateTotalSRM(event);
+    }
     cell2.appendChild(weightInput);
     
     // Lovibond display
@@ -236,17 +219,36 @@ function addRow() {
     srmDisplay.textContent = "";  
     cell5.appendChild(srmDisplay);
 }
-function updateTotalSRM() {
-    totalSRM = 0;
-    let tableRows = document.querySelectorAll('#malt-table tbody tr'); // Adjust the selector if your table has a different ID or structure
+
+function updateSRM() {
+    const batchSize = parseFloat(document.getElementById('batchSize').value);
+    
+    // Ensure we don't divide by zero
+    if (batchSize === 0) return;
+
+    let totalSRM = 0;
+
+    // Loop through table rows to calculate total SRM
+    let tableRows = document.querySelectorAll('#malt-table tbody tr');
+    
     tableRows.forEach(row => {
-        let quantity = parseFloat(row.cells[0].firstChild.textContent);
-        let lovibond = parseFloat(row.cells[2].firstChild.textContent);
-        // This is a basic formula to compute SRM, adjust as needed:
-        totalSRM += (lovibond * quantity) / 10; 
+        let maltName = row.cells[0].firstChild.textContent.trim();
+        let weight = parseFloat(row.cells[1].firstChild.textContent); // Assuming quantity/weight is in the second column
+        let lovibond = malts[maltName].lovibond; // Assuming you still have a malts object for reference
+
+        totalSRM += (weight * lovibond) / batchSize;
     });
+
+    // Update the color display (if needed)
+    updateColor();
+
+    // Update the slider values by SRM (if needed)
+    setSliderValuesBySRM(totalSRM);
+
+    // Update SRM display in the table or elsewhere
     document.getElementById('total-srm').textContent = totalSRM.toFixed(2);
 }
+
 
 function updateSRMContribution(event) {
     const row = event.target.parentElement.parentElement;
