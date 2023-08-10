@@ -177,7 +177,7 @@ function addRow() {
     maltDropdown.onchange = function(event) {
       updateSRMContribution(event);
       updateMaltDetails(event);
-      updateTotalSRM(event);
+      updateSRM(event);
   };
     maltIndex.forEach(malt => {
         const option = document.createElement("option");
@@ -194,7 +194,7 @@ function addRow() {
     weightInput.value = "";
     weightInput.oninput = function(event) {
       updateSRMContribution(event);
-      updateTotalSRM(event);
+      updateSRM(event);
     }
     cell2.appendChild(weightInput);
     
